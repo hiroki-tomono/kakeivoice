@@ -1105,7 +1105,7 @@
 
     async function parseImageWithClaudeAPI(base64, mimeType) {
       const apiKey = localStorage.getItem(API_KEY_KEY);
-      if (!apiKey) return null;
+      if (!apiKey) throw new Error('Claude API Keyが設定されていません');
 
       const imageSystemPrompt = `あなたは家計簿入力アシスタントです。レシート/買い物の画像を解析して、構造化されたJSONを返してください。
 
@@ -1223,8 +1223,14 @@
         });
 
         if (!response.ok) {
-          console.error('Claude API error:', response.status);
-          return null;
+          const errBody = await response.text();
+          console.error('Claude API error:', response.status, errBody);
+          let detail = errBody;
+          try {
+            const j = JSON.parse(errBody);
+            detail = j.error?.message || errBody;
+          } catch {}
+          throw new Error(`API ${response.status}: ${detail}`);
         }
 
         const data = await response.json();
@@ -1246,11 +1252,12 @@
         if (parsed) {
           return Array.isArray(parsed) ? parsed : [parsed];
         }
+        console.error('Claude API parse failed. raw content:', content);
+        throw new Error('解析結果のJSONを抽出できませんでした');
       } catch (error) {
         console.error('Claude API error:', error);
+        throw error;
       }
-
-      return null;
     }
 
     async function uploadImageToDrive(base64, originalFileName) {
