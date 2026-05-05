@@ -255,7 +255,8 @@
       font-size: 14px;
     }
     .status.success { background: #e8f5e9; color: #2e7d32; }
-    .status.error { background: #ffebee; color: #c62828; }
+    .status.error { background: #ffebee; color: #c62828; cursor: pointer; position: relative; padding-right: 32px; text-align: left; }
+    .status.error::after { content: '×'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 20px; font-weight: bold; opacity: 0.6; }
     
     .setup-notice {
       background: #fff3cd;
@@ -1829,7 +1830,20 @@
       status.textContent = message;
       status.className = 'status ' + type;
       status.style.display = 'block';
-      setTimeout(() => { status.style.display = 'none'; }, 3000);
+      if (status._hideTimer) {
+        clearTimeout(status._hideTimer);
+        status._hideTimer = null;
+      }
+      status.onclick = null;
+      if (type === 'error') {
+        status.title = 'タップで閉じる';
+        status.onclick = () => {
+          status.style.display = 'none';
+          status.onclick = null;
+        };
+      } else {
+        status._hideTimer = setTimeout(() => { status.style.display = 'none'; }, 3000);
+      }
     }
 
     // ===== ヘルプセクション開閉 =====
