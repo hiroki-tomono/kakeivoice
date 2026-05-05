@@ -1250,10 +1250,15 @@
           }
         }
         if (parsed) {
-          return Array.isArray(parsed) ? parsed : [parsed];
+          const arr = Array.isArray(parsed) ? parsed : [parsed];
+          if (arr.length === 0) {
+            console.error('Claude API returned empty array. raw content:', content);
+            throw new Error('レシートを検出できませんでした（応答が空）');
+          }
+          return arr;
         }
         console.error('Claude API parse failed. raw content:', content);
-        throw new Error('解析結果のJSONを抽出できませんでした');
+        throw new Error('解析結果のJSONを抽出できませんでした: ' + content.slice(0, 200));
       } catch (error) {
         console.error('Claude API error:', error);
         throw error;
