@@ -611,7 +611,7 @@
       <label>Claude API Key（AI補正用・任意）</label>
       <input type="password" id="claudeApiKey" placeholder="sk-ant-api03-xxxxx">
       <p style="font-size: 12px; color: #666; margin-top: 4px;">
-        <a href="https://console.anthropic.com/settings/keys" target="_blank">Anthropic Console</a> で取得（1回約0.01円）
+        <a href="https://console.anthropic.com/settings/keys" target="_blank">Anthropic Console</a> で取得（音声入力1回約1.6円、レシート画像1回約3.8円）
       </p>
     </div>
     <div class="form-group">
@@ -916,8 +916,9 @@
             'anthropic-dangerous-direct-browser-access': 'true'
           },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
+            model: 'claude-sonnet-5',
             max_tokens: 500,
+            thinking: { type: 'disabled' },
             system: systemPrompt,
             messages: [{ role: 'user', content: `音声入力: 「${text}」` }]
           })
@@ -1200,8 +1201,9 @@
             'anthropic-dangerous-direct-browser-access': 'true'
           },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
+            model: 'claude-sonnet-5',
             max_tokens: 1500,
+            thinking: { type: 'disabled' },
             system: imageSystemPrompt,
             messages: [{
               role: 'user',
